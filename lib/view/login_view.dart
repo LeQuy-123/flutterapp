@@ -1,6 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutterapp/view/register_view.dart';
 import '../firebase_options.dart';
 
 class LoginView extends StatefulWidget {
@@ -11,18 +12,18 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  late final TextEditingController _email;
-  late final TextEditingController _password;
+  late final TextEditingController _email  = TextEditingController()..text = '';
+  late final TextEditingController _password  = TextEditingController()..text = '';
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    _email = TextEditingController();
-    _password = TextEditingController();
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   _email = TextEditingController();
+  //   _password = TextEditingController();
+  //   super.initState();
+  // }
 
   @override
   void dispose() {
@@ -31,18 +32,27 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      final user = {
-        'name': _email.text,
-        'password': _password.text,
-      };
-      print(user.toString());
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+                email:  _email.text,
+                password:  _password.text);
+        _formKey.currentState!.reset();
+        print(userCredential);
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          print('No user found for that email.');
+        } else if (e.code == 'wrong-password') {
+          print('Wrong password provided for that user.');
+        }
+      }
     }
   }
 
   String? _validateInput(String? value) {
-    if (value!.isEmpty || value.length > 10) {
+    if (value!.isEmpty) {
       return 'Please enter a valid input';
     } return null;
   }
@@ -73,6 +83,9 @@ class _LoginViewState extends State<LoginView> {
                       validator: _validateInput,
                       autocorrect: false,
                       controller: _email,
+                      onFieldSubmitted: (String value) {
+                        _nextFocus(_passwordFocusNode);
+                      },
                       keyboardType: TextInputType.emailAddress,
                       enableSuggestions: false,
                       decoration: const InputDecoration(
@@ -88,6 +101,16 @@ class _LoginViewState extends State<LoginView> {
                       enableSuggestions: false,
                       decoration: const InputDecoration(
                         labelText: 'Password',
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => const RegisterView()));
+                        },
+                        child: const Text('Register'),
                       ),
                     ),
                     ElevatedButton(
