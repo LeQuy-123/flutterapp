@@ -40,7 +40,7 @@ class _LoginViewState extends State<LoginView> {
                 email:  _email.text,
                 password:  _password.text);
         _formKey.currentState!.reset();
-        print(userCredential);
+        Navigator.pushNamed(context, '/home/');
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
           print('No user found for that email.');
@@ -107,8 +107,7 @@ class _LoginViewState extends State<LoginView> {
                       alignment: Alignment.topRight,
                       child: TextButton(
                         onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const RegisterView()));
+                          Navigator.pushNamed(context, '/register/');
                         },
                         child: const Text('Register'),
                       ),
