@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterapp/view/register_view.dart';
 import '../firebase_options.dart';
+import 'dart:developer' as dev_tools;
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -14,16 +16,10 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email  = TextEditingController()..text = '';
   late final TextEditingController _password  = TextEditingController()..text = '';
+  int _state = 0;
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
-
-  // @override
-  // void initState() {
-  //   _email = TextEditingController();
-  //   _password = TextEditingController();
-  //   super.initState();
-  // }
 
   @override
   void dispose() {
@@ -33,20 +29,38 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> _submitForm() async {
+     dev_tools.log('subbmit');
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(
-                email:  _email.text,
-                password:  _password.text);
+        setState(() {
+          _state = 1;
+        });
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: _email.text, password: _password.text);
         _formKey.currentState!.reset();
-        Navigator.pushNamed(context, '/home/');
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'user-not-found') {
-          print('No user found for that email.');
-        } else if (e.code == 'wrong-password') {
-          print('Wrong password provided for that user.');
+        final user = FirebaseAuth.instance.currentUser;
+        setState(() {
+          _state = 2;
+        });
+        if (user!.emailVerified) {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/home/', (route) => false);
+        } else {
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil('/verify_email/', (route) => false);
         }
+      } on FirebaseAuthException catch (e) {
+          dev_tools.log(e.toString());
+        // if (e.code == 'user-not-found') {
+        //   dev_tools.log('No user found for that email.');
+        // } else if (e.code == 'wrong-password') {
+        //   dev_tools.log('Wrong password provided for that user.');
+        // }
+        Timer(const Duration(seconds: 3), () {
+          setState(() {
+          _state = 0;
+          });
+        });
       }
     }
   }
@@ -112,9 +126,17 @@ class _LoginViewState extends State<LoginView> {
                         child: const Text('Register'),
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: _submitForm,
-                      child: const Text('Login'),
+                    MaterialButton(
+                      child: setUpButtonChild(),
+                      onPressed: () {
+                        if (_state == 0) {
+                          _submitForm();
+                        }
+                      },
+                      elevation: 4.0,
+                      minWidth: double.infinity,
+                      height: 48.0,
+                      color: Colors.lightGreen,
                     ),
                   ],
                 ),
@@ -129,5 +151,23 @@ class _LoginViewState extends State<LoginView> {
         },
       ),
     );
+  }
+
+  Widget setUpButtonChild() {
+    if (_state == 0) {
+      return const Text(
+        "Click Here",
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16.0,
+        ),
+      );
+    } else if (_state == 1) {
+      return const CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      );
+    } else {
+      return const Icon(Icons.check, color: Colors.white);
+    }
   }
 }

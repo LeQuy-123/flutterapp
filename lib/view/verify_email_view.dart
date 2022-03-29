@@ -14,6 +14,15 @@ class _VerifyEmailState extends State<VerifyEmail> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Verify Email'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
