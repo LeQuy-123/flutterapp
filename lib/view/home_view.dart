@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as dev_tools;
 
 import '../firebase_options.dart';
 class HomeView extends StatefulWidget {
@@ -46,10 +47,6 @@ class _HomeViewState extends State<HomeView> {
       appBar: AppBar(
         title: const Text('Home'),
         actions: [
-          // IconButton(
-          //   icon: const Icon(Icons.menu),
-          //   onPressed: _signOut,
-          // ),
           PopupMenuButton<menuOptions>(
             onSelected: (menuOptions value) async {
               if (value == menuOptions.logout) {
@@ -76,8 +73,9 @@ class _HomeViewState extends State<HomeView> {
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              return const Center(
-                  child: Text('Welcome!'),
+              final user = FirebaseAuth.instance.currentUser;
+              return Center(
+                  child: Text("Welcome ${user!.email}"),
               );
             case ConnectionState.waiting:
             case ConnectionState.active:

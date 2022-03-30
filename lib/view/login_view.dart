@@ -29,7 +29,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<void> _submitForm() async {
-     dev_tools.log('subbmit');
+    dev_tools.log('subbmit');
     if (_formKey.currentState!.validate()) {
       try {
         setState(() {
@@ -42,20 +42,17 @@ class _LoginViewState extends State<LoginView> {
         setState(() {
           _state = 2;
         });
-        if (user!.emailVerified) {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/home/', (route) => false);
-        } else {
-          Navigator.of(context)
-              .pushNamedAndRemoveUntil('/verify_email/', (route) => false);
-        }
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/home/', (route) => false);
+        // if (user!.emailVerified) {
+        //   Navigator.of(context)
+        //       .pushNamedAndRemoveUntil('/home/', (route) => false);
+        // } else {
+        //   Navigator.of(context)
+        //       .pushNamedAndRemoveUntil('/verify_email/', (route) => false);
+        // }
       } on FirebaseAuthException catch (e) {
           dev_tools.log(e.toString());
-        // if (e.code == 'user-not-found') {
-        //   dev_tools.log('No user found for that email.');
-        // } else if (e.code == 'wrong-password') {
-        //   dev_tools.log('Wrong password provided for that user.');
-        // }
         Timer(const Duration(seconds: 3), () {
           setState(() {
           _state = 0;
