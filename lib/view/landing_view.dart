@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import '../firebase_options.dart';
+import 'package:flutterapp/const/routes.dart';
 
 class LandingView extends StatefulWidget {
   const LandingView({Key? key}) : super(key: key);
@@ -27,12 +28,12 @@ class _LandingViewState extends State<LandingView> {
               if (user != null) {
                 Timer(const Duration(milliseconds: 0), () {
                   Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/home/', (route) => false);
+                  .pushNamedAndRemoveUntil(homeRoute, (route) => false);
                 });         
               } else {
                 Timer(const Duration(milliseconds: 0), () {
                   Navigator.of(context)
-                    .pushNamedAndRemoveUntil('/login/', (route) => false);
+                    .pushNamedAndRemoveUntil(loginRoute, (route) => false);
                 });
               }
               return const Scaffold(

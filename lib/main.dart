@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/const/routes.dart';
 import 'package:flutterapp/view/home_view.dart';
 import 'package:flutterapp/view/landing_view.dart';
 import 'package:flutterapp/view/login_view.dart';
@@ -15,10 +16,10 @@ void main() {
       initialRoute: '/',
       routes: {
         '/':(context) => const LandingView(),
-        '/login/': (context) => const LoginView(),
-        '/register/': (context) => const RegisterView(),
-        '/home/': (context) => const HomeView(),
-        '/verify_email/': (context) => const VerifyEmail(),
+        loginRoute: (context) => const LoginView(),
+        registerRoute: (context) => const RegisterView(),
+        homeRoute: (context) => const HomeView(),
+        verifyEmailRoute: (context) => const VerifyEmail(),
       },
     ));
 }

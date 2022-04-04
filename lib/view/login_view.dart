@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/const/routes.dart';
+import '../component/error_dialog.dart';
 import '../firebase_options.dart';
 import 'dart:developer' as dev_tools;
 
@@ -38,21 +40,16 @@ class _LoginViewState extends State<LoginView> {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: _email.text, password: _password.text);
         _formKey.currentState!.reset();
-        final user = FirebaseAuth.instance.currentUser;
         setState(() {
           _state = 2;
         });
         Navigator.of(context)
-            .pushNamedAndRemoveUntil('/home/', (route) => false);
-        // if (user!.emailVerified) {
-        //   Navigator.of(context)
-        //       .pushNamedAndRemoveUntil('/home/', (route) => false);
-        // } else {
-        //   Navigator.of(context)
-        //       .pushNamedAndRemoveUntil('/verify_email/', (route) => false);
-        // }
+            .pushNamedAndRemoveUntil(homeRoute, (route) => false);
       } on FirebaseAuthException catch (e) {
-          dev_tools.log(e.toString());
+        showErrorDialog(context,
+            title: 'Error',
+            message: e.message ?? 'An error has occurred',
+          );
         Timer(const Duration(seconds: 3), () {
           setState(() {
           _state = 0;
@@ -118,7 +115,7 @@ class _LoginViewState extends State<LoginView> {
                       alignment: Alignment.topRight,
                       child: TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/register/');
+                          Navigator.pushNamed(context, registerRoute);
                         },
                         child: const Text('Register'),
                       ),
