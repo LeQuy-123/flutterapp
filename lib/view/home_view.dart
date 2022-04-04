@@ -1,8 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/service/auth/auth_service.dart';
 
-import '../firebase_options.dart';
 class HomeView extends StatefulWidget {
   const HomeView({ Key? key }) : super(key: key);
 
@@ -51,7 +49,7 @@ class _HomeViewState extends State<HomeView> {
               if (value == menuOptions.logout) {
                 final data = await showLogoutDialog(context);
                 if(data) {
-                  FirebaseAuth.instance.signOut();
+                  AuthSerivce.firebase().logOut();
                   Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
                 }
               }
@@ -66,15 +64,12 @@ class _HomeViewState extends State<HomeView> {
         ],
       ),
       body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
+        future: AuthSerivce.firebase().intialize(),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              final user = FirebaseAuth.instance.currentUser;
-              return Center(
-                  child: Text("Welcome ${user!.email}"),
+              return const Center(
+                  child: Text("Welcome"),
               );
             case ConnectionState.waiting:
             case ConnectionState.active:

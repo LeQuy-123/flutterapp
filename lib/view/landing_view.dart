@@ -1,10 +1,7 @@
 
 import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import '../firebase_options.dart';
+import 'package:flutterapp/service/auth/auth_service.dart';
 import 'package:flutterapp/const/routes.dart';
 
 class LandingView extends StatefulWidget {
@@ -18,13 +15,11 @@ class _LandingViewState extends State<LandingView> {
   @override
   Widget build(BuildContext context) {
     return  FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
+        future: AuthSerivce.firebase().intialize(),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
-              final user = FirebaseAuth.instance.currentUser;
+              final user = AuthSerivce.firebase().currentUser;
               if (user != null) {
                 Timer(const Duration(milliseconds: 0), () {
                   Navigator.of(context)

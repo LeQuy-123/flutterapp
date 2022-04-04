@@ -1,11 +1,9 @@
 import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterapp/const/routes.dart';
+import 'package:flutterapp/service/auth/auth_exception.dart';
+import 'package:flutterapp/service/auth/auth_service.dart';
 import '../component/error_dialog.dart';
-import '../firebase_options.dart';
 import 'dart:developer' as dev_tools;
 
 class LoginView extends StatefulWidget {
@@ -37,23 +35,27 @@ class _LoginViewState extends State<LoginView> {
         setState(() {
           _state = 1;
         });
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: _email.text, password: _password.text);
+        await AuthSerivce.firebase().logIn(email: _email.text, password: _password.text);
         _formKey.currentState!.reset();
         setState(() {
           _state = 2;
         });
         Navigator.of(context)
             .pushNamedAndRemoveUntil(homeRoute, (route) => false);
-      } on FirebaseAuthException catch (e) {
-        showErrorDialog(context,
-            title: 'Error',
-            message: e.message ?? 'An error has occurred',
-          );
-        Timer(const Duration(seconds: 3), () {
-          setState(() {
+      } on UserNotFoundException {
+        showErrorDialog(context, title: 'Error', message: 'User not found');
+        setState(() {
           _state = 0;
-          });
+        });
+      } on WrongPassWordException {
+        showErrorDialog(context, title: 'Error', message: 'Wrong password');
+        setState(() {
+          _state = 0;
+        });
+      } on GenericAuthException  {
+        showErrorDialog(context, title: 'Error', message: 'Error');
+        setState(() {
+          _state = 0;
         });
       }
     }
@@ -76,9 +78,7 @@ class _LoginViewState extends State<LoginView> {
         title: const Text('Login'),
       ),
       body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
+        future: AuthSerivce.firebase().intialize(),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.done:

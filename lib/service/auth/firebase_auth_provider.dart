@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth, FirebaseAuthException;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutterapp/service/auth/auth_exception.dart';
 import 'package:flutterapp/service/auth/auth_provider.dart';
 import 'package:flutterapp/service/auth/auth_user.dart';
+
+import '../../firebase_options.dart';
 
 
 class FirebaseAuthProvider implements AuthProvider {
@@ -35,7 +38,6 @@ class FirebaseAuthProvider implements AuthProvider {
   }
 
   @override
-  // TODO: implement currentUser
   AuthUser? get currentUser {
     final user = FirebaseAuth.instance.currentUser;
     return user != null ? AuthUser.fromFirebaseUser(user) : null;
@@ -80,4 +82,6 @@ class FirebaseAuthProvider implements AuthProvider {
     user != null ? await user.sendEmailVerification() : throw UserNotLoginException('User not login');
   }
 
+  @override
+  Future<void> intialize() async => Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }

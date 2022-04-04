@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutterapp/const/routes.dart';
+import 'package:flutterapp/service/auth/auth_exception.dart';
+import 'package:flutterapp/service/auth/auth_service.dart';
 
 import '../component/error_dialog.dart';
 
@@ -59,18 +60,24 @@ class _RegisterViewState extends State<RegisterView> {
           TextButton(
             onPressed: () async {
               try {
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                await AuthSerivce.firebase().createUser(
                   email: _email.text,
                   password: _password.text,
                 );
                 Navigator.of(context)
                     .pushNamedAndRemoveUntil(homeRoute, (route) => false);
-              } on FirebaseAuthException catch (e) {
-                showErrorDialog(
-                  context,
-                  title: 'Error',
-                  message: e.message ?? 'An error has occurred',
-                );
+              }  on WeakPasswordException {
+                showErrorDialog(context,
+                    title: 'Error', message: 'Weak password');
+              } on EmailAlredyInUseException {
+                showErrorDialog(context,
+                    title: 'Error', message: 'Email already in user');
+              } on InvalidEmailException {
+                showErrorDialog(context,
+                    title: 'Error', message: 'Invalid email');
+              } on GenericAuthException {
+                showErrorDialog(context,
+                    title: 'Error', message: 'Generic error');
               }
             
             },
