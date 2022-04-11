@@ -1,0 +1,3 @@
+class DatabaseAlreadyOpenException {}
+
+class UnableToGetDocumentsDirectoryException {}
