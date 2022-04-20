@@ -7,7 +7,7 @@ class HomeView extends StatefulWidget {
   @override
   State<HomeView> createState() => _HomeViewState();
 }
-enum menuOptions { 
+enum MenuOptions { 
   logout,
   settings
 }
@@ -44,9 +44,9 @@ class _HomeViewState extends State<HomeView> {
       appBar: AppBar(
         title: const Text('Home'),
         actions: [
-          PopupMenuButton<menuOptions>(
-            onSelected: (menuOptions value) async {
-              if (value == menuOptions.logout) {
+          PopupMenuButton<MenuOptions>(
+            onSelected: (MenuOptions value) async {
+              if (value == MenuOptions.logout) {
                 final data = await showLogoutDialog(context);
                 if(data) {
                   AuthSerivce.firebase().logOut();
@@ -55,8 +55,8 @@ class _HomeViewState extends State<HomeView> {
               }
             },
             itemBuilder: (BuildContext context) => [
-              const PopupMenuItem<menuOptions>(
-                value: menuOptions.logout,
+              const PopupMenuItem<MenuOptions>(
+                value: MenuOptions.logout,
                 child: Text('Sign Out'),
               ),
             ],
