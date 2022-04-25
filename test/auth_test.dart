@@ -88,7 +88,7 @@ class MockAuthProvider implements AuthProvider {
     if (!_isInitialized) throw NotInitializedExepction();
     if (email == 'lequy@gmail.com')  throw UserNotFoundException('User not found');
     if (password == '123123') throw WrongPassWordException('Wrong password');
-    const user = AuthUser(isEmailVerified: false);
+    const user = AuthUser(isEmailVerified: false, email: '');
     _user = user;
     return Future.value(user);
   }
@@ -112,7 +112,7 @@ class MockAuthProvider implements AuthProvider {
     if (!_isInitialized) throw NotInitializedExepction();
     final user = _user;
     if (user == null) throw UserNotFoundException('User not found');
-    const newUser = AuthUser(isEmailVerified: true);
+    const newUser = AuthUser(isEmailVerified: true, email: '');
     _user = newUser;
   }
 }
